@@ -10,7 +10,7 @@
       </div>
       <nav class="ve-nav">
         <ul>
-          <li v-for="item in navItems" :key="item.id" :class="{ 'has-drop': item.children?.length }">
+          <li v-for="item in displayNavItems" :key="item.id" :class="{ 'has-drop': item.children?.length }">
             <router-link v-if="item.url && !item.children?.length" :to="item.url" active-class="active">{{ item.label }}</router-link>
             <a v-else-if="item.children?.length" href="#">{{ item.label }} <i class="fa fa-angle-down"></i></a>
             <router-link v-else :to="item.url || '#'" active-class="active">{{ item.label }}</router-link>
@@ -31,7 +31,7 @@
     </div>
     <div class="ve-mobile-menu" :class="{ open: mobileOpen }">
       <ul>
-        <li v-for="item in allNavFlat" :key="item.id">
+        <li v-for="item in mobileNavFlat" :key="item.id">
           <router-link :to="item.url || '#'" @click="mobileOpen = false">{{ item.label }}</router-link>
         </li>
       </ul>
@@ -47,6 +47,16 @@ const scrolled = ref(false)
 const mobileOpen = ref(false)
 const company = ref({})
 const navItems = ref([])
+
+const defaultNavItems = [
+  { id: '1', label: 'Home', url: '/', children: [] },
+  { id: '2', label: 'About', url: '/about.html', children: [] },
+  { id: '3', label: 'Services', url: '/services.html', children: [] },
+  { id: '4', label: 'Blog', url: '/post.html', children: [] },
+  { id: '5', label: 'Contact', url: '/contact.html', children: [] }
+]
+
+const displayNavItems = computed(() => navItems.value.length ? navItems.value : defaultNavItems)
 
 function onScroll() { scrolled.value = window.scrollY > 50 }
 onMounted(async () => {
@@ -64,9 +74,9 @@ onMounted(async () => {
 })
 onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 
-const allNavFlat = computed(() => {
+const mobileNavFlat = computed(() => {
   const result = []
-  for (const item of navItems.value) {
+  for (const item of displayNavItems.value) {
     result.push(item)
     if (item.children) result.push(...item.children)
   }

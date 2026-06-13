@@ -21,7 +21,7 @@
         <div class="col-12 col-sm-6 col-lg-2 mb-50">
           <h5 class="ve-footer-title">Quick Links</h5>
           <ul class="ve-footer-links">
-            <li v-for="link in footer.quickLinks || []" :key="link.label">
+            <li v-for="link in quickLinks" :key="link.label">
               <router-link :to="link.url || '#'">{{ link.label }}</router-link>
             </li>
           </ul>
@@ -29,7 +29,7 @@
         <div class="col-12 col-sm-6 col-lg-3 mb-50">
           <h5 class="ve-footer-title">Our Services</h5>
           <ul class="ve-footer-links">
-            <li v-for="link in footer.serviceLinks || []" :key="link.label">
+            <li v-for="link in serviceLinks" :key="link.label">
               <router-link :to="link.url || '#'">{{ link.label }}</router-link>
             </li>
           </ul>
@@ -50,7 +50,7 @@
         <div class="ve-footer-bottom-inner">
           <p>Copyright &copy; {{ year }} {{ company.name || 'AlpharKing Enterprise' }}. All Rights Reserved.</p>
           <ul>
-            <li v-for="link in footer.policies || []" :key="link.label">
+            <li v-for="link in policies" :key="link.label">
               <router-link :to="link.url || '#'">{{ link.label }}</router-link>
             </li>
           </ul>
@@ -61,13 +61,35 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import api from '@/api'
 
 const year = new Date().getFullYear()
+const defaultQuickLinks = [
+  { label: 'Home', url: '/' },
+  { label: 'About', url: '/about.html' },
+  { label: 'Services', url: '/services.html' },
+  { label: 'Blog', url: '/post.html' },
+  { label: 'Contact', url: '/contact.html' }
+]
+const defaultServiceLinks = [
+  { label: 'Blockchain Development', url: '/services.html' },
+  { label: 'Smart Contracts', url: '/services.html' },
+  { label: 'Web3 Solutions', url: '/services.html' },
+  { label: 'Tokenization', url: '/services.html' }
+]
+const defaultPolicies = [
+  { label: 'Privacy Policy', url: '#' },
+  { label: 'Terms of Service', url: '#' }
+]
+
 const footer = ref({})
 const company = ref({})
 const social = ref({})
+
+const quickLinks = computed(() => footer.value.quickLinks?.length ? footer.value.quickLinks : defaultQuickLinks)
+const serviceLinks = computed(() => footer.value.serviceLinks?.length ? footer.value.serviceLinks : defaultServiceLinks)
+const policies = computed(() => footer.value.policies?.length ? footer.value.policies : defaultPolicies)
 
 onMounted(async () => {
   try {

@@ -46,7 +46,7 @@ const saving = ref(false)
 const error = ref('')
 
 onMounted(async () => {
-  try { const { data } = await api.get('/hero'); Object.assign(form.value, data) } catch {}
+  try { const { data } = await api.get('/hero'); Object.assign(form.value, data) } catch (e) { error.value = e.response?.data?.message || 'Failed to load hero data' }
 })
 
 async function save() {

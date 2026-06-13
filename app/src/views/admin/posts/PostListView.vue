@@ -14,7 +14,7 @@
             <td>{{ p.author }}</td>
             <td>{{ p.publishedAt ? new Date(p.publishedAt).toLocaleDateString() : '-' }}</td>
             <td class="actions">
-              <router-link :to="`/admin/posts/${p.id}/edit`" class="btn-sm" title="Edit"><i class="fa fa-pencil"></i></router-link>
+              <router-link :to="`/admin/posts/${p.slug}/edit`" class="btn-sm" title="Edit"><i class="fa fa-pencil"></i></router-link>
               <button class="btn-sm danger" @click="remove(p.id)" title="Delete"><i class="fa fa-trash"></i></button>
             </td>
           </tr>

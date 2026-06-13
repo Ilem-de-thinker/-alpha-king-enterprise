@@ -34,7 +34,7 @@ const saving = ref(false)
 const error = ref('')
 
 onMounted(async () => {
-  try { const { data } = await api.get('/why-us'); Object.assign(form.value, data) } catch {}
+  try { const { data } = await api.get('/why-us'); Object.assign(form.value, data) } catch (e) { error.value = e.response?.data?.message || 'Failed to load why-us data' }
 })
 
 async function save() {

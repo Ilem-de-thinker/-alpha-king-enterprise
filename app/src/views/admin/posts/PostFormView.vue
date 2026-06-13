@@ -13,7 +13,7 @@
           <div class="form-group">
             <label>Category</label>
             <select v-model="form.category">
-              <option v-for="c in categories" :key="c">{{ c }}</option>
+              <option v-for="c in categories" :key="c.id" :value="c.name">{{ c.name }}</option>
             </select>
           </div>
         </div>
@@ -32,8 +32,8 @@
           <textarea v-model="form.excerpt" rows="2"></textarea>
         </div>
         <div class="form-group">
-          <label>Content (markdown/rich text)</label>
-          <textarea v-model="form.content" rows="12"></textarea>
+          <label>Content</label>
+          <TiptapEditor v-model="form.content" />
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -63,27 +63,40 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '@/api'
+import TiptapEditor from '@/components/admin/TiptapEditor.vue'
 
 const route = useRoute()
 const router = useRouter()
-const isEdit = computed(() => !!route.params.id)
+const isEdit = computed(() => !!route.params.slug)
+const postId = ref('')
 const saving = ref(false)
 const error = ref('')
-const categories = ['Blockchain', 'Web3', 'Smart Contracts', 'DeFi', 'Tokenization', 'Enterprise']
+const categories = ref([])
 
 const form = ref({
   title: '', slug: '', excerpt: '', content: '', featuredImage: '',
-  category: 'Blockchain', tags: [], author: '', readTime: ''
+  category: '', tags: [], author: '', readTime: ''
 })
 const tagsStr = ref('')
 
 onMounted(async () => {
+  try {
+    const { data: catData } = await api.get('/categories')
+    categories.value = catData.results || (Array.isArray(catData) ? catData : [])
+    if (!isEdit.value && categories.value.length > 0) {
+      form.value.category = categories.value[0].name
+    }
+  } catch (e) {
+    console.error('Failed to load categories', e)
+  }
+
   if (isEdit.value) {
     try {
-      const { data } = await api.get(`/posts/${route.params.id}`)
+      const { data } = await api.get(`/posts/${route.params.slug}`)
       Object.assign(form.value, data)
-      tagsStr.value = (data.tags || []).join(', ')
-    } catch { router.push('/admin/posts') }
+      postId.value = data.id
+      tagsStr.value = (data.tags || []).map(t => t.name || t).join(', ')
+    } catch (e) { error.value = e.response?.data?.message || 'Failed to load post'; router.push('/admin/posts') }
   }
 })
 
@@ -92,7 +105,7 @@ async function save() {
   form.value.tags = tagsStr.value.split(',').map(t => t.trim()).filter(Boolean)
   try {
     if (isEdit.value) {
-      await api.put(`/posts/${route.params.id}`, form.value)
+      await api.put(`/posts/${postId.value}`, form.value)
     } else {
       await api.post('/posts', form.value)
     }

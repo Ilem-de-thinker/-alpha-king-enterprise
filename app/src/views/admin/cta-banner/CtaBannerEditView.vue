@@ -28,7 +28,7 @@ const form = ref({ title: '', highlight: '', description: '', buttonText: '', bu
 const saving = ref(false)
 const error = ref('')
 
-onMounted(async () => { try { const { data } = await api.get('/cta-banner'); Object.assign(form.value, data) } catch {} })
+onMounted(async () => { try { const { data } = await api.get('/cta-banner'); Object.assign(form.value, data) } catch (e) { error.value = e.response?.data?.message || 'Failed to load CTA banner data' } })
 
 async function save() {
   error.value = ''; saving.value = true

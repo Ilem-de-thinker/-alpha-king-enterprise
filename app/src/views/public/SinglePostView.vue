@@ -2,104 +2,126 @@
   <div>
     <AppHeader />
 
-    <section class="ve-page-hero" :style="{ backgroundImage: 'url(' + (post.featuredImage || '/img/bg-img/3.jpg') + ')' }">
-      <div class="ve-page-hero-overlay"></div>
-      <div class="container ve-page-hero-content">
-        <ul class="ve-breadcrumb"><li><router-link to="/">Home</router-link></li><li><router-link to="/post.html">Insights</router-link></li><li class="active">{{ post.title }}</li></ul>
-        <h1>{{ post.title }}</h1>
-        <div class="ve-post-meta-hero">
-          <span><i class="fa fa-user"></i> {{ post.author }}</span>
-          <span><i class="fa fa-calendar"></i> {{ formatDate(post.publishedAt) }}</span>
-          <span><i class="fa fa-clock-o"></i> {{ post.readTime }}</span>
-          <span><i class="fa fa-folder"></i> {{ post.category }}</span>
+    <template v-if="loading">
+      <section class="ve-page-hero" style="background-image:url(/img/bg-img/3.jpg);">
+        <div class="ve-page-hero-overlay"></div>
+        <div class="container ve-page-hero-content">
+          <ul class="ve-breadcrumb"><li><router-link to="/">Home</router-link></li><li><router-link to="/post.html">Insights</router-link></li><li class="active">...</li></ul>
+          <h1>Loading...</h1>
         </div>
-      </div>
-    </section>
+      </section>
+      <section class="ve-section">
+        <div class="container">
+          <div class="row">
+            <div class="col-12 col-lg-8">
+              <SkeletonLoader type="article" />
+            </div>
+            <div class="col-12 col-lg-4">
+              <SkeletonLoader type="sidebar" :count="3" />
+            </div>
+          </div>
+        </div>
+      </section>
+    </template>
+    <template v-else>
+      <section class="ve-page-hero" :style="{ backgroundImage: 'url(' + (post.featuredImage || '/img/bg-img/3.jpg') + ')' }">
+        <div class="ve-page-hero-overlay"></div>
+        <div class="container ve-page-hero-content">
+          <ul class="ve-breadcrumb"><li><router-link to="/">Home</router-link></li><li><router-link to="/post.html">Insights</router-link></li><li class="active">{{ post.title }}</li></ul>
+          <h1>{{ post.title }}</h1>
+          <div class="ve-post-meta-hero">
+            <span><i class="fa fa-user"></i> {{ post.author }}</span>
+            <span><i class="fa fa-calendar"></i> {{ formatDate(post.publishedAt) }}</span>
+            <span><i class="fa fa-clock-o"></i> {{ post.readTime }}</span>
+            <span><i class="fa fa-folder"></i> {{ post.category }}</span>
+          </div>
+        </div>
+      </section>
 
-    <section class="ve-section">
-      <div class="container">
-        <div class="row">
-          <div class="col-12 col-lg-8">
-            <article class="ve-article" v-if="post.id">
-              <div class="ve-article-body">
-                <p class="ve-article-lead">{{ post.excerpt }}</p>
-                <div v-html="post.content"></div>
-                <div class="ve-article-tags" v-if="post.tags?.length">
-                  <strong>Tags:</strong>
-                  <a v-for="t in post.tags" :key="t" class="ve-tag-link">{{ t }}</a>
+      <section class="ve-section">
+        <div class="container">
+          <div class="row">
+            <div class="col-12 col-lg-8">
+              <article class="ve-article" v-if="post.id">
+                <div class="ve-article-body">
+                  <p class="ve-article-lead">{{ post.excerpt }}</p>
+                  <div v-html="post.content"></div>
+                  <div class="ve-article-tags" v-if="post.tags?.length">
+                    <strong>Tags:</strong>
+                    <a v-for="t in post.tags" :key="t.id" class="ve-tag-link">{{ t.name }}</a>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Comments -->
+              <div class="ve-comments-section" v-if="comments.length">
+                <h4>Comments ({{ comments.length }})</h4>
+                <div class="ve-comment" v-for="c in comments" :key="c.id">
+                  <div class="ve-comment-avatar bg-img" style="background-image:url(/img/core-img/avatar.png);"></div>
+                  <div class="ve-comment-body">
+                    <div class="ve-comment-meta"><strong>{{ c.name }}</strong><span>{{ formatDate(c.createdAt) }}</span></div>
+                    <p>{{ c.content }}</p>
+                  </div>
                 </div>
               </div>
-            </article>
-            <p v-else class="empty-state">Loading post...</p>
 
-            <!-- Comments -->
-            <div class="ve-comments-section" v-if="comments.length">
-              <h4>Comments ({{ comments.length }})</h4>
-              <div class="ve-comment" v-for="c in comments" :key="c.id">
-                <div class="ve-comment-avatar bg-img" style="background-image:url(/img/core-img/avatar.png);"></div>
-                <div class="ve-comment-body">
-                  <div class="ve-comment-meta"><strong>{{ c.name }}</strong><span>{{ formatDate(c.createdAt) }}</span></div>
-                  <p>{{ c.content }}</p>
-                </div>
+              <!-- Comment Form -->
+              <div class="ve-comment-form-wrap">
+                <h4>Leave a Comment</h4>
+                <form class="ve-contact-form" @submit.prevent="submitComment">
+                  <div class="ve-form-row">
+                    <div class="ve-form-group">
+                      <label>Name</label>
+                      <input v-model="commentForm.name" type="text" required />
+                    </div>
+                    <div class="ve-form-group">
+                      <label>Email</label>
+                      <input v-model="commentForm.email" type="email" required />
+                    </div>
+                  </div>
+                  <div class="ve-form-group">
+                    <label>Comment</label>
+                    <textarea v-model="commentForm.content" rows="4" required></textarea>
+                  </div>
+                  <p v-if="commentMsg" :style="{ color: commentErr ? '#e53e3e' : '#28a745', fontSize: '14px' }">{{ commentMsg }}</p>
+                  <button type="submit" class="ve-btn-primary" :disabled="commentSending">{{ commentSending ? 'Posting...' : 'Post Comment' }}</button>
+                </form>
               </div>
             </div>
 
-            <!-- Comment Form -->
-            <div class="ve-comment-form-wrap">
-              <h4>Leave a Comment</h4>
-              <form class="ve-contact-form" @submit.prevent="submitComment">
-                <div class="ve-form-row">
-                  <div class="ve-form-group">
-                    <label>Name</label>
-                    <input v-model="commentForm.name" type="text" required />
-                  </div>
-                  <div class="ve-form-group">
-                    <label>Email</label>
-                    <input v-model="commentForm.email" type="email" required />
+            <!-- Sidebar -->
+            <div class="col-12 col-lg-4">
+              <aside class="ve-sidebar">
+                <div class="ve-sidebar-widget">
+                  <h5 class="ve-sidebar-title">Categories</h5>
+                  <ul class="ve-cat-list">
+                    <li v-for="c in categories" :key="c.id">
+                      <router-link :to="{ path: '/post.html', query: { category: c.name } }">{{ c.name }} <span>{{ c.postCount }}</span></router-link>
+                    </li>
+                  </ul>
+                </div>
+                <div class="ve-sidebar-widget">
+                  <h5 class="ve-sidebar-title">Recent Posts</h5>
+                  <div class="ve-recent-post" v-for="rp in recentPosts" :key="rp.id">
+                    <div class="ve-rp-img bg-img" :style="{ backgroundImage: 'url(' + rp.featuredImage + ')' }"></div>
+                    <div>
+                      <router-link :to="'/single-post/' + rp.slug">{{ rp.title }}</router-link>
+                      <span><i class="fa fa-calendar"></i> {{ formatDate(rp.publishedAt) }}</span>
+                    </div>
                   </div>
                 </div>
-                <div class="ve-form-group">
-                  <label>Comment</label>
-                  <textarea v-model="commentForm.content" rows="4" required></textarea>
+                <div class="ve-sidebar-widget">
+                  <h5 class="ve-sidebar-title">Tags</h5>
+                  <div class="ve-tags">
+                    <router-link v-for="t in tags" :key="t.id" :to="{ path: '/post.html', query: { tag: t.name } }">{{ t.name }}</router-link>
+                  </div>
                 </div>
-                <p v-if="commentMsg" :style="{ color: commentErr ? '#e53e3e' : '#28a745', fontSize: '14px' }">{{ commentMsg }}</p>
-                <button type="submit" class="ve-btn-primary" :disabled="commentSending">{{ commentSending ? 'Posting...' : 'Post Comment' }}</button>
-              </form>
+              </aside>
             </div>
           </div>
-
-          <!-- Sidebar -->
-          <div class="col-12 col-lg-4">
-            <aside class="ve-sidebar">
-              <div class="ve-sidebar-widget">
-                <h5 class="ve-sidebar-title">Categories</h5>
-                <ul class="ve-cat-list">
-                  <li v-for="c in categories" :key="c.id">
-                    <router-link to="/post.html">{{ c.name }} <span>{{ c.postCount }}</span></router-link>
-                  </li>
-                </ul>
-              </div>
-              <div class="ve-sidebar-widget">
-                <h5 class="ve-sidebar-title">Recent Posts</h5>
-                <div class="ve-recent-post" v-for="rp in recentPosts" :key="rp.id">
-                  <div class="ve-rp-img bg-img" :style="{ backgroundImage: 'url(' + rp.featuredImage + ')' }"></div>
-                  <div>
-                    <router-link :to="'/single-post/' + rp.slug">{{ rp.title }}</router-link>
-                    <span><i class="fa fa-calendar"></i> {{ formatDate(rp.publishedAt) }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="ve-sidebar-widget">
-                <h5 class="ve-sidebar-title">Tags</h5>
-                <div class="ve-tags">
-                  <router-link v-for="t in tags" :key="t.id" to="/post.html">{{ t.name }}</router-link>
-                </div>
-              </div>
-            </aside>
-          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </template>
 
     <NewsletterForm />
     <AppFooter />
@@ -113,8 +135,10 @@ import api from '@/api'
 import AppHeader from '@/components/public/AppHeader.vue'
 import AppFooter from '@/components/public/AppFooter.vue'
 import NewsletterForm from '@/components/public/NewsletterForm.vue'
+import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
 
 const route = useRoute()
+const loading = ref(true)
 const post = ref({})
 const comments = ref([])
 const categories = ref([])
@@ -140,6 +164,7 @@ async function fetchPost() {
       comments.value = comms.results || (Array.isArray(comms) ? comms : [])
     }
   } catch {}
+  finally { loading.value = false }
 }
 
 async function submitComment() {

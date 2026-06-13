@@ -59,7 +59,7 @@ onMounted(async () => {
     try {
         const { data } = await api.get("/newsletter-section");
         Object.assign(form.value, data);
-    } catch {}
+    } catch (e) { error.value = e.response?.data?.message || 'Failed to load newsletter section data' }
 });
 async function save() {
     error.value = "";
