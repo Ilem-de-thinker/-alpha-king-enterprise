@@ -8,7 +8,8 @@
     "preview": "cd app && npm run preview",
     "install:app": "cd app && npm install"
   },
-  "dependencies": {
+  "devDependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^41.4.2",
     "@ckeditor/ckeditor5-vue": "^8.1.1"
   }
 }
