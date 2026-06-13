@@ -1,0 +1,14 @@
+{
+  "name": "alpharking-enterprise",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "cd app && npm run dev",
+    "build": "cd app && npm run build",
+    "preview": "cd app && npm run preview",
+    "install:app": "cd app && npm install"
+  },
+  "dependencies": {
+    "@ckeditor/ckeditor5-vue": "^8.1.1"
+  }
+}
