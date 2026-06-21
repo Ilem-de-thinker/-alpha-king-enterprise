@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import api from '@/api'
 
 const items = ref([])
@@ -46,7 +46,10 @@ const form = ref({ icon: '', title: '', description: '', order: 0 })
 const formError = ref('')
 const saving = ref(false)
 
-onMounted(load)
+function onEscape(e) { if (e.key === 'Escape' && showForm.value) showForm.value = false }
+
+onMounted(() => { load(); document.addEventListener('keydown', onEscape) })
+onUnmounted(() => document.removeEventListener('keydown', onEscape))
 async function load() { try { const { data } = await api.get('/mvv/items'); items.value = data.results || (Array.isArray(data) ? data : []) } catch { items.value = [] } }
 function edit(m) { editItem.value = m; form.value = { icon: m.icon, title: m.title, description: m.description || '', order: m.order || 0 }; showForm.value = true }
 async function save() {

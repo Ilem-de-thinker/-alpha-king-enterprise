@@ -1,5 +1,11 @@
 # Blog API
 
+> **📸 Image Upload:** The `featuredImage` field supports **direct file upload to Cloudinary**.  
+> To upload an image, send a **`multipart/form-data`** request with the image file in the `featuredImage` field.  
+> You can also pass an existing URL string if you already have an image hosted elsewhere.
+
+---
+
 ## List Posts
 
 - **URL:** `/api/posts/`
@@ -128,7 +134,7 @@ GET /api/posts/the-future-of-blockchain-in-enterprise-solutions/
 
 - **URL:** `/api/posts/`
 - **Method:** `POST`
-- **Content-Type:** `application/json`
+- **Content-Type:** `multipart/form-data` (for file upload) or `application/json` (for URL strings)
 ### **Request Body:**
 
 |Field Name|Type|Required|Description|
@@ -136,7 +142,7 @@ GET /api/posts/the-future-of-blockchain-in-enterprise-solutions/
 |title|string|Yes|Post title|
 |excerpt|string|Yes|Short description|
 |content|string|Yes|Post body (markdown/rich text)|
-|featuredImage|string|No|URL to featured image|
+|featuredImage|file / string|No|Image file (uploaded to Cloudinary) or existing URL|
 |category|string|Yes|One of: Blockchain, Web3, Smart Contracts, DeFi, Tokenization, Enterprise|
 |tags|array of strings|No|List of tag names|
 |author|string|Yes|Author name|
@@ -208,7 +214,7 @@ GET /api/posts/the-future-of-blockchain-in-enterprise-solutions/
 
 - **URL:** `/api/posts/<id>/`
 - **Method:** `PUT`
-- **Content-Type:** `application/json`
+- **Content-Type:** `multipart/form-data` (for file upload) or `application/json` (for URL strings)
 ### **Request Body:**
 
 |Field Name|Type|Required|Description|
@@ -216,7 +222,7 @@ GET /api/posts/the-future-of-blockchain-in-enterprise-solutions/
 |title|string|Yes|Post title|
 |excerpt|string|Yes|Short description|
 |content|string|Yes|Post body|
-|featuredImage|string|No|URL to featured image|
+|featuredImage|file / string|No|Image file (uploaded to Cloudinary) or existing URL|
 |category|string|Yes|One of the valid categories|
 |tags|array of strings|No|List of tag names|
 |author|string|Yes|Author name|

@@ -129,18 +129,18 @@ async function handleLogout() {
 </script>
 
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'DM Sans', sans-serif; background: #f4f7fb; color: #4a5568; }
-h1,h2,h3,h4,h5,h6 { font-family: 'Nunito', sans-serif; color: #0d1b2a; }
-a { text-decoration: none; }
+.admin-layout * { margin: 0; padding: 0; box-sizing: border-box; }
+.admin-layout { font-family: 'DM Sans', sans-serif; background: #f4f7fb; color: #4a5568; }
+.admin-layout h1,.admin-layout h2,.admin-layout h3,.admin-layout h4,.admin-layout h5,.admin-layout h6 { font-family: 'Nunito', sans-serif; color: #0d1b2a; }
+.admin-layout a { text-decoration: none; }
 @media (max-width: 768px) {
-  .form-row { grid-template-columns: 1fr !important; }
-  .table-card { overflow-x: auto; }
-  table { font-size: 13px; }
-  th, td { padding: 10px 12px !important; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
-  .modal-card { margin: 16px; max-width: none !important; }
-  .links-grid { flex-direction: column; }
+  .admin-layout .form-row { grid-template-columns: 1fr !important; }
+  .admin-layout .table-card { overflow-x: auto; }
+  .admin-layout table { font-size: 13px; }
+  .admin-layout th,.admin-layout td { padding: 10px 12px !important; }
+  .admin-layout .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .admin-layout .modal-card { margin: 16px; max-width: none !important; }
+  .admin-layout .links-grid { flex-direction: column; }
 }
 </style>
 

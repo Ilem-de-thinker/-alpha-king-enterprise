@@ -10,7 +10,7 @@
           <div class="form-group"><label>Button Text</label><input v-model="form.buttonText" /></div>
           <div class="form-group"><label>Button URL</label><input v-model="form.buttonUrl" /></div>
         </div>
-        <div class="form-group"><label>Background Image URL</label><input v-model="form.backgroundImage" /></div>
+        <div class="form-group"><label>Background Image</label><ImageUpload v-model="form.backgroundImage" @file="bgImageFile = $event" /></div>
         <p v-if="error" class="error">{{ error }}</p>
         <div class="form-actions">
           <button type="submit" class="btn-primary" :disabled="saving">{{ saving ? 'Saving...' : 'Save Changes' }}</button>
@@ -23,17 +23,33 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '@/api'
+import ImageUpload from '@/components/admin/ImageUpload.vue'
+
+const FORM_KEYS = ['title', 'highlight', 'description', 'buttonText', 'buttonUrl', 'backgroundImage']
 
 const form = ref({ title: '', highlight: '', description: '', buttonText: '', buttonUrl: '', backgroundImage: '' })
 const saving = ref(false)
 const error = ref('')
+const bgImageFile = ref(null)
 
-onMounted(async () => { try { const { data } = await api.get('/cta-banner'); Object.assign(form.value, data) } catch (e) { error.value = e.response?.data?.message || 'Failed to load CTA banner data' } })
+onMounted(async () => {
+  try {
+    const { data } = await api.get('/cta-banner/')
+    FORM_KEYS.forEach(k => { if (data[k] !== undefined) form.value[k] = data[k] })
+  } catch (e) { error.value = e.response?.data?.error || 'Failed to load CTA banner data' }
+})
 
 async function save() {
   error.value = ''; saving.value = true
-  try { await api.put('/cta-banner', form.value) }
-  catch (e) { error.value = e.response?.data?.message || 'Error saving' }
+  try {
+    const fd = new FormData()
+    FORM_KEYS.forEach(k => {
+      if (k === 'backgroundImage' && bgImageFile.value) fd.append(k, bgImageFile.value)
+      else fd.append(k, form.value[k] ?? '')
+    })
+    await api.put('/cta-banner/', fd)
+  }
+  catch (e) { error.value = e.response?.data?.error || 'Error saving' }
   finally { saving.value = false }
 }
 </script>
@@ -42,12 +58,13 @@ async function save() {
 .page-header h3 { font-size: 22px; font-weight: 800; margin-bottom: 24px; }
 .form-card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 32px; }
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
-.form-group label { font-size: 13px; font-weight: 700; text-transform: uppercase; }
-.form-group input, .form-group textarea { border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; }
-.form-group input:focus, .form-group textarea:focus { border-color: #007bff; }
+.form-group label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0d1b2a; }
+.form-group input, .form-group textarea { border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s; }
+.form-group input:focus, .form-group textarea:focus { border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.form-actions { display: flex; justify-content: flex-end; margin-top: 24px; }
-.btn-primary { background: #007bff; color: #0d1b2a; padding: 12px 24px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.form-actions { display: flex; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+.btn-primary { background: #007bff; color: #0d1b2a; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; }
+.btn-primary:hover { background: #0069d9; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 .error { color: #e53e3e; font-size: 13px; }
 </style>

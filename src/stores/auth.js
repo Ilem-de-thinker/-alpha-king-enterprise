@@ -9,23 +9,11 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value)
 
   async function login(email, password) {
-    try {
-      const { data } = await api.post('/auth/login', { email, password })
-      token.value = data.token
-      user.value = data.user
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
-      return
-    } catch {
-      if (email && password) {
-        const dummyToken = 'dummy-jwt-token-' + Date.now()
-        const dummyUser = { id: 1, name: 'Admin', email, role: 'admin' }
-        token.value = dummyToken
-        user.value = dummyUser
-        localStorage.setItem('token', dummyToken)
-        localStorage.setItem('user', JSON.stringify(dummyUser))
-      }
-    }
+    const { data } = await api.post('/auth/login', { email, password })
+    token.value = data.token
+    user.value = data.user
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('user', JSON.stringify(data.user))
   }
 
   async function logout() {

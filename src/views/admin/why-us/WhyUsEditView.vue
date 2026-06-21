@@ -7,7 +7,7 @@
         <div class="form-group"><label>Title</label><input v-model="form.title" /></div>
         <div class="form-group"><label>Highlight</label><input v-model="form.highlight" /></div>
         <div class="form-group"><label>Description</label><textarea v-model="form.description" rows="3"></textarea></div>
-        <div class="form-group"><label>Image URL</label><input v-model="form.image" /></div>
+        <div class="form-group"><label>Image</label><ImageUpload v-model="form.image" @file="imageFile = $event" /></div>
         <div class="form-row">
           <div class="form-group"><label>Badge Value</label><input v-model="form.badgeValue" /></div>
           <div class="form-group"><label>Badge Label</label><input v-model="form.badgeLabel" /></div>
@@ -28,19 +28,33 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '@/api'
+import ImageUpload from '@/components/admin/ImageUpload.vue'
+
+const FORM_KEYS = ['tag', 'title', 'highlight', 'description', 'image', 'badgeValue', 'badgeLabel', 'ctaText', 'ctaUrl']
 
 const form = ref({ tag: '', title: '', highlight: '', description: '', image: '', badgeValue: '', badgeLabel: '', ctaText: '', ctaUrl: '' })
 const saving = ref(false)
 const error = ref('')
+const imageFile = ref(null)
 
 onMounted(async () => {
-  try { const { data } = await api.get('/why-us'); Object.assign(form.value, data) } catch (e) { error.value = e.response?.data?.message || 'Failed to load why-us data' }
+  try {
+    const { data } = await api.get('/why-us/')
+    FORM_KEYS.forEach(k => { if (data[k] !== undefined) form.value[k] = data[k] })
+  } catch (e) { error.value = e.response?.data?.error || 'Failed to load why-us data' }
 })
 
 async function save() {
   error.value = ''; saving.value = true
-  try { await api.put('/why-us', form.value) }
-  catch (e) { error.value = e.response?.data?.message || 'Error saving' }
+  try {
+    const fd = new FormData()
+    FORM_KEYS.forEach(k => {
+      if (k === 'image' && imageFile.value) fd.append(k, imageFile.value)
+      else fd.append(k, form.value[k] ?? '')
+    })
+    await api.put('/why-us/', fd)
+  }
+  catch (e) { error.value = e.response?.data?.error || 'Error saving' }
   finally { saving.value = false }
 }
 </script>
@@ -50,12 +64,13 @@ async function save() {
 .page-header p { font-size: 14px; color: #4a5568; margin-bottom: 24px; }
 .form-card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 32px; }
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
-.form-group label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.form-group input, .form-group textarea { border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; }
-.form-group input:focus, .form-group textarea:focus { border-color: #007bff; }
+.form-group label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0d1b2a; }
+.form-group input, .form-group textarea { border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s; }
+.form-group input:focus, .form-group textarea:focus { border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
-.btn-primary { background: #007bff; color: #0d1b2a; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+.btn-primary { background: #007bff; color: #0d1b2a; padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; }
+.btn-primary:hover { background: #0069d9; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 .error { color: #e53e3e; font-size: 13px; }
 </style>

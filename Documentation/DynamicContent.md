@@ -1,5 +1,11 @@
 # Dynamic Content API
 
+> **📸 Image Upload:** All image fields (`mainImage`, `accentImage`, `image`, `backgroundImage`, `heroImage`, `secondaryImage`) support **direct file upload to Cloudinary**.  
+> To upload an image, send a **`multipart/form-data`** request with the image file in the corresponding field.  
+> You can also pass an existing URL string if you already have an image hosted elsewhere.
+
+---
+
 ## Hero Section
 
 - **URL:** `/api/hero/`
@@ -37,7 +43,7 @@
 
 - **URL:** `/api/hero/`
 - **Method:** `PUT`
-- **Content-Type:** `application/json`
+- **Content-Type:** `multipart/form-data` (for file upload) or `application/json` (for URL strings)
 ### **Request Body:**
 
 |Field Name|Type|Required|Description|
@@ -50,8 +56,8 @@
 |ctaPrimaryUrl|string|No|Primary button URL|
 |ctaSecondaryText|string|No|Secondary button text|
 |ctaSecondaryUrl|string|No|Secondary button URL|
-|mainImage|string|No|Left hero image URL|
-|accentImage|string|No|Right accent image URL|
+|mainImage|file / string|No|Image file (uploaded to Cloudinary) or existing URL|
+|accentImage|file / string|No|Image file (uploaded to Cloudinary) or existing URL|
 |floatCardIcon|string|No|Font Awesome icon class|
 |floatCardValue|string|No|Stat value|
 |floatCardLabel|string|No|Stat label|
@@ -382,7 +388,7 @@
 
 - **URL:** `/api/why-us/`
 - **Method:** `PUT`
-- **Content-Type:** `application/json`
+- **Content-Type:** `multipart/form-data` (for file upload) or `application/json` (for URL strings)
 ### **Request Body:**
 
 |Field Name|Type|Required|Description|
@@ -391,7 +397,7 @@
 |title|string|No|Main heading|
 |highlight|string|No|Highlighted word|
 |description|string|No|Description text|
-|image|string|No|Image URL|
+|image|file / string|No|Image file (uploaded to Cloudinary) or existing URL|
 |badgeValue|string|No|Badge stat value|
 |badgeLabel|string|No|Badge stat label|
 |ctaText|string|No|Button text|
@@ -496,7 +502,7 @@
 
 - **URL:** `/api/cta-banner/`
 - **Method:** `PUT`
-- **Content-Type:** `application/json`
+- **Content-Type:** `multipart/form-data` (for file upload) or `application/json` (for URL strings)
 ### **Request Body:**
 
 |Field Name|Type|Required|Description|
@@ -506,7 +512,7 @@
 |description|string|No|Description|
 |buttonText|string|No|Button label|
 |buttonUrl|string|No|Button URL|
-|backgroundImage|string|No|Background image URL|
+|backgroundImage|file / string|No|Background image file (uploaded to Cloudinary) or existing URL|
 
 ---
 
@@ -546,7 +552,7 @@
 
 - **URL:** `/api/about/`
 - **Method:** `PUT`
-- **Content-Type:** `application/json`
+- **Content-Type:** `multipart/form-data` (for file upload) or `application/json` (for URL strings)
 ### **Request Body:**
 
 |Field Name|Type|Required|Description|
@@ -556,13 +562,13 @@
 |highlight|string|No|Highlighted word|
 |leadParagraph|string|No|Lead paragraph|
 |bodyParagraphs|array of strings|No|Array of body paragraphs|
-|mainImage|string|No|Main image URL|
-|secondaryImage|string|No|Secondary image URL|
+|mainImage|file / string|No|Main image file (uploaded to Cloudinary) or existing URL|
+|secondaryImage|file / string|No|Secondary image file (uploaded to Cloudinary) or existing URL|
 |badgeValue|string|No|Badge stat value|
 |badgeLabel|string|No|Badge stat label|
 |ctaText|string|No|Button text|
 |ctaUrl|string|No|Button URL|
-|heroImage|string|No|Page hero background URL|
+|heroImage|file / string|No|Hero background image file (uploaded to Cloudinary) or existing URL|
 
 ---
 

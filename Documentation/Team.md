@@ -1,5 +1,11 @@
 # Team API
 
+> **📸 Image Upload:** The `image` field supports **direct file upload to Cloudinary**.  
+> To upload an image, send a **`multipart/form-data`** request with the image file in the `image` field.  
+> You can also pass an existing URL string if you already have an image hosted elsewhere.
+
+---
+
 ## List Team Members
 
 - **URL:** `/api/team/`
@@ -58,14 +64,14 @@
 
 - **URL:** `/api/team/`
 - **Method:** `POST`
-- **Content-Type:** `application/json`
+- **Content-Type:** `multipart/form-data` (for file upload) or `application/json` (for URL strings)
 ### **Request Body:**
 
 |Field Name|Type|Required|Description|
 |---|---|---|---|
 |name|string|Yes|Member's full name|
 |role|string|Yes|Job title / role|
-|image|string|No|Profile image URL|
+|image|file / string|No|Profile image file (uploaded to Cloudinary) or existing URL|
 |linkedin|string|No|LinkedIn profile URL|
 |twitter|string|No|Twitter profile URL|
 |order|integer|No|Display order|
@@ -107,14 +113,14 @@
 
 - **URL:** `/api/team/<id>/`
 - **Method:** `PUT`
-- **Content-Type:** `application/json`
+- **Content-Type:** `multipart/form-data` (for file upload) or `application/json` (for URL strings)
 ### **Request Body:**
 
 |Field Name|Type|Required|Description|
 |---|---|---|---|
 |name|string|No|Member's full name|
 |role|string|No|Job title|
-|image|string|No|Profile image URL|
+|image|file / string|No|Profile image file (uploaded to Cloudinary) or existing URL|
 |linkedin|string|No|LinkedIn URL|
 |twitter|string|No|Twitter URL|
 |order|integer|No|Display order|
@@ -152,7 +158,8 @@
 ### **Notes**
 
 - Team members are ordered by the `order` field ascending
-- Image, LinkedIn, and Twitter fields are optional
+- The `image` field accepts either a file upload (uploaded to Cloudinary) or an existing URL string
+- LinkedIn, and Twitter fields are optional
 - All admin endpoints require Bearer Token in headers:
   ```
   Authorization: Bearer <token>

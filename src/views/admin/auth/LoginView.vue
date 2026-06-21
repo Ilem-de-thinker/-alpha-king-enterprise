@@ -53,7 +53,7 @@ async function handleLogin() {
         await auth.login(email.value, password.value);
         router.push("/admin");
     } catch (e) {
-        error.value = e.response?.data?.message || "Invalid credentials";
+        error.value = e.response?.data?.error || e.response?.data?.message || "Invalid credentials";
     } finally {
         loading.value = false;
     }
